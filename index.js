@@ -3,9 +3,13 @@ dotenv.config()
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-import { connectToDb } from './config/db.js'
+
 
 const app = express()
+
+import urlRouter from './routes/url.router.js'
+
+import { connectToDb } from './config/db.js'
 
 app.use(cors({
     origin: "http://localhost:3000",
@@ -15,7 +19,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 
-
+app.use('/api/url',urlRouter)
 
 app.listen(process.env.PORT, () => {
     connectToDb()

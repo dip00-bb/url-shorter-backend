@@ -24,3 +24,19 @@ export async function handleGenerateNewShortURL(req, res) {
 
 }
 
+export async function historyOfShortUrl(req,res){
+    const shortId=req.params.shortId
+    
+    
+    const result=await URL.findOne({
+        shortId
+    })
+
+    return res.json({
+        totalClicks:result.visitHistory.length,
+        history:result.visitHistory
+    })
+
+
+    return body
+}

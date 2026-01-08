@@ -1,9 +1,9 @@
 import express from "express";
-import { handleGenerateNewShortURL } from "../controlller/url.controller.js";
+import { handleGenerateNewShortURL, historyOfShortUrl } from "../controlller/url.controller.js";
 
 const router = express.Router()
 
 router.post('/generate-url', handleGenerateNewShortURL) 
-
+router.post('/history/:shortId',historyOfShortUrl)
 
 export default router

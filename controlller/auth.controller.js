@@ -118,7 +118,6 @@ export async function handleRefreshToken(req, res) {
         if (!user || !refreshToken) {
             return res.status(400).json({ message: "Refresh token not found" })
 
-
         }
 
 
@@ -135,7 +134,7 @@ export async function handleRefreshToken(req, res) {
             sameSite: "strict"
         });
 
-        return res.status(200).json({ message: "Access token refreshed successfully" })
+        return res.status(200).json({ message: "Access token refreshed successfully",user:{id:user._id,email:user.email,username:user.username} })
     } catch (error) {
         console.log("Refresh token failed", error)
         return res.status(500).json({ message: "Failed to refresh token" })

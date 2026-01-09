@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.post('/generate-url', authenticateUser, handleGenerateNewShortURL)
 router.post('/history/:shortId', historyOfShortUrl)
-router.post('/urls/:userId', getUserUrls)
-router.delete('/:urlId', deleteUrls)
+router.get('/urls/:userId', getUserUrls)
+router.delete('/delete-url/:urlId', deleteUrls)
 
 export default router

@@ -20,7 +20,7 @@ export async function handleGenerateNewShortURL(req, res) {
         // console.log(req.userId)
         const result = await User.updateOne({
             _id: req.userId,
-            totalGenLink: { $lt: 5 }
+            totalGenLink: { $lt: 100 }
         }, {
             $push: {
                 createdUrls: url._id
@@ -58,7 +58,6 @@ export async function getUserUrls(req, res) {
 export async function deleteUrls(req, res) {
     try {
         const urlId = req.params.urlId
-        console.log(urlId)
         const deletedUrl = await URL.findOneAndDelete({ _id: urlId });
 
         if (!deletedUrl) {

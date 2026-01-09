@@ -37,45 +37,68 @@ export async function handleUserLogin(req, res) {
             sameSite: "strict"
         });
 
-        return res.status(200).json( {
-            id:user.id,
-            username:user.username,
-            email:user.email
+        return res.status(200).json({
+            id: user.id,
+            username: user.username,
+            email: user.email
         })
 
 
     } catch (error) {
-        console.log("login failed",error)
+        console.log("login failed", error)
         return res.status(500).json("login failed")
     }
-} 
+}
 
 
-export async function handleUserRegister(req,res){
-    const {username,email,password}=req.body
+export async function handleUserRegister(req, res) {
+    const { username, email, password } = req.body
 
 
     try {
-        const existingUser=await User.findOne({email})
+        const existingUser = await User.findOne({ email })
 
-        if(existingUser) return res.status(409).json({message:"email already in use"})
-         
+        if (existingUser) return res.status(409).json({ message: "email already in use" })
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser=await User.create({
-            username:username,
-            email:email,
-            password:hashedPassword
+        const newUser = await User.create({
+            username: username,
+            email: email,
+            password: hashedPassword
         })
 
         return res.status(200).json({
-            id:newUser.id,
-            email:newUser.email,
-            username:newUser.username
+            id: newUser.id,
+            email: newUser.email,
+            username: newUser.username
         })
 
     } catch (error) {
         console.error("Registration failed:", error);
         return res.status(500).json("Registration failed.");
+    }
+}
+
+
+
+export async function handleLogout(req, res) {
+    try {
+            const userId = req?.userId
+
+    if (userId) {
+        await User.findOneAndUpdate(
+            { id: userId },
+            { refreshToken: null }
+        )
+    }
+
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+
+    return res.status(200).json({message:"logout sucessfull"})
+    } catch (error) {
+        console.log("logout failded",error)
+        return res.status(500).json("Logout failed")
     }
 }

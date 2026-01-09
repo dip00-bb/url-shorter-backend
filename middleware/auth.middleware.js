@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken'
-import authConfig from '../config/auth.config';
+import authConfig from '../config/auth.config.js';
+
 
 export async function authenticateUser(req, res,next) {
-    cosnt
+    console.log(req.cookies)
     const token = req.cookies.accessToken;
 
     if (!token) {

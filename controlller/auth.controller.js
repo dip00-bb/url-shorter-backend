@@ -52,3 +52,31 @@ export async function handleUserLogin(req, res) {
 } 
 
 
+export async function handleUserRegister(req,res){
+    const {username,email,password}=req.body
+
+
+    try {
+        const existingUser=await User.findOne({email})
+
+        if(existingUser) return res.status(409).json({message:"email already in use"})
+         
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser=await User.create({
+            username:username,
+            email:email,
+            password:password
+        })
+
+        return res.status(200).json({
+            id:newUser.id,
+            email:newUser.email,
+            username:newUser.username
+        })
+
+    } catch (error) {
+        console.error("Registration failed:", error);
+        return res.status(500).json("Registration failed.");
+    }
+}

@@ -66,7 +66,7 @@ export async function handleUserRegister(req,res){
         const newUser=await User.create({
             username:username,
             email:email,
-            password:password
+            password:hashedPassword
         })
 
         return res.status(200).json({

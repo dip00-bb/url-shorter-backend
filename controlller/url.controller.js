@@ -20,7 +20,7 @@ export async function handleGenerateNewShortURL(req, res) {
         // console.log(req.userId)
         const result = await User.updateOne({
             _id: req.userId,
-            totalGenLink: { $lt: 100 }
+            totalGenLink: { $lt: 5 }
         }, {
             $push: {
                 createdUrls: url._id
@@ -29,7 +29,7 @@ export async function handleGenerateNewShortURL(req, res) {
                 totalGenLink: 1
             }
         })
-        
+
         if (result.modifiedCount === 0) {
             return res.status(400).json({ message: "You have reached the maximum limit of 100 links." });
         }
@@ -58,8 +58,21 @@ export async function getUserUrls(req, res) {
 export async function deleteUrls(req, res) {
     try {
         const urlId = req.params.urlId
-        await URL.findOneAndDelete({ _id: urlId })
-        return res.status(200).json({ message: "url deleted" })
+        console.log(urlId)
+        const deletedUrl = await URL.findOneAndDelete({ _id: urlId });
+
+        if (!deletedUrl) {
+            return res.status(404).json({ message: "URL not found" });
+        }
+
+        await User.updateOne(
+            { createdUrls: urlId },
+            {
+                $pull: { createdUrls: urlId },
+                $inc: { totalGenLink: -1 }
+            }
+        );
+        return res.status(200).json({ success: true, message: "Url deleted sucessfully" })
     } catch (error) {
         return res.status(500).json({ message: "can not delete url" })
     }

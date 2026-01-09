@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userSchema =new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
@@ -13,11 +13,18 @@ const userSchema =new mongoose.Schema({
         type: String,
         required: true
     },
-    refreshToken:{
-        type:String,
-    }
-},{timestamps:true}) 
+    refreshToken: {
+        type: String,
+    },
+    createdUrls: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Url"
+        }
+    ]
 
-const User=mongoose.model("User",userSchema) 
+}, { timestamps: true })
+
+const User = mongoose.model("User", userSchema)
 
 export default User

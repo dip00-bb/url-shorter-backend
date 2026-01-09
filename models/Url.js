@@ -3,12 +3,12 @@ import mongoose from "mongoose";
 const urlSchema = new mongoose.Schema({
     shortId: {
         type: String,
-        require: true,
+        required: true,
         unique: true
     },
     redirectURL: {
         type: String,
-        require: true
+        required: true
     },
 
     visitHistory: [

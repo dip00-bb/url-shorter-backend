@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
-const userSchema = mongoose.Schema({
-    name: {
+const userSchema =new mongoose.Schema({
+    username: {
         type: String,
         required: true,
     },
@@ -12,8 +12,11 @@ const userSchema = mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    refreshToken:{
+        type:String,
     }
-}) 
+},{timestamps:true}) 
 
 const User=mongoose.model("User",userSchema) 
 

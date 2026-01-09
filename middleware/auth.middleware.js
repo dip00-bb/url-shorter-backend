@@ -3,7 +3,7 @@ import authConfig from '../config/auth.config.js';
 
 
 export async function authenticateUser(req, res,next) {
-    console.log(req.cookies)
+
     const token = req.cookies.accessToken;
 
     if (!token) {
@@ -23,7 +23,6 @@ export async function authenticateUser(req, res,next) {
 
 
 export async function refreshtokenValidation(req, res,next) {
-    cosnt
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {

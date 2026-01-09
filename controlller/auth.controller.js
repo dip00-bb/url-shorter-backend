@@ -19,9 +19,16 @@ export async function handleUserLogin(req, res) {
             return res.status(401).json({ message: "Invalid credentials." })
         }
 
-        const accessToken = generateToken(user.id, authConfig.secret, authConfig.secret_expires_in, "15m")
+        const accessToken = generateToken(user._id, authConfig.secret, authConfig.secret_expires_in, "15m")
 
-        const refreshToken = generateToken(user.id, authConfig.refresh_secret, authConfig.refresh_secret_expires_in, "1d")
+        const refreshToken = generateToken(user._id, authConfig.refresh_secret, authConfig.refresh_secret_expires_in, "1d")
+
+
+        await User.findOneAndUpdate(
+            { email: email },
+            { refreshToken: refreshToken }
+
+        )
 
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
@@ -38,7 +45,7 @@ export async function handleUserLogin(req, res) {
         });
 
         return res.status(200).json({
-            id: user.id,
+            id: user._id,
             username: user.username,
             email: user.email
         })
@@ -49,7 +56,6 @@ export async function handleUserLogin(req, res) {
         return res.status(500).json("login failed")
     }
 }
-
 
 export async function handleUserRegister(req, res) {
     const { username, email, password } = req.body
@@ -69,7 +75,7 @@ export async function handleUserRegister(req, res) {
         })
 
         return res.status(200).json({
-            id: newUser.id,
+            id: newUser._id,
             email: newUser.email,
             username: newUser.username
         })
@@ -80,25 +86,58 @@ export async function handleUserRegister(req, res) {
     }
 }
 
-
-
 export async function handleLogout(req, res) {
     try {
-            const userId = req?.userId
+        const userId = req?.userId
 
-    if (userId) {
-        await User.findOneAndUpdate(
-            { id: userId },
-            { refreshToken: null }
-        )
-    }
+        if (userId) {
+            await User.findOneAndUpdate(
+                { _id: userId },
+                { refreshToken: null }
+            )
+        }
 
-    res.clearCookie("accessToken");
-    res.clearCookie("refreshToken");
+        res.clearCookie("accessToken");
+        res.clearCookie("refreshToken");
 
-    return res.status(200).json({message:"logout sucessfull"})
+        return res.status(200).json({ message: "logout sucessfull" })
     } catch (error) {
-        console.log("logout failded",error)
+        console.log("logout failded", error)
         return res.status(500).json("Logout failed")
+    }
+}
+
+export async function handleRefreshToken(req, res) {
+    try {
+        const userId = req.userId
+        const refreshToken = req.cookies.refreshToken
+
+
+        const user = await User.findOne({ _id: userId })
+
+        if (!user || !refreshToken) {
+            return res.status(400).json({ message: "Refresh token not found" })
+
+
+        }
+
+
+        if (refreshToken !== user.refreshToken) {
+            return res.status(401).json({ message: "Invalid refresh token" })
+        }
+
+        const newAccessToken = generateToken(userId, authConfig.secret, authConfig.secret_expires_in, "15m")
+
+        res.cookie("accessToken", newAccessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 15 * 60 * 1000,  // 15 minutes
+            sameSite: "strict"
+        });
+
+        return res.status(200).json({ message: "Access token refreshed successfully" })
+    } catch (error) {
+        console.log("Refresh token failed", error)
+        return res.status(500).json({ message: "Failed to refresh token" })
     }
 }

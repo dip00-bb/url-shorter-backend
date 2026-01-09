@@ -36,7 +36,4 @@ export async function historyOfShortUrl(req,res){
         totalClicks:result.visitHistory.length,
         history:result.visitHistory
     })
-
-
-    return body
 }

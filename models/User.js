@@ -16,6 +16,11 @@ const userSchema = new mongoose.Schema({
     refreshToken: {
         type: String,
     },
+
+    totalGenLink: {
+        type: Number, default: 0
+    },
+
     createdUrls: [
         {
             type: mongoose.Schema.Types.ObjectId,

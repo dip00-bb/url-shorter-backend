@@ -18,13 +18,21 @@ export async function handleGenerateNewShortURL(req, res) {
         })
 
         // console.log(req.userId)
-        await User.updateOne({
-            _id: req.userId
+        const result = await User.updateOne({
+            _id: req.userId,
+            totalGenLink: { $lt: 100 }
         }, {
             $push: {
                 createdUrls: url._id
+            },
+            $inc: {
+                totalGenLink: 1
             }
         })
+        
+        if (result.modifiedCount === 0) {
+            return res.status(400).json({ message: "You have reached the maximum limit of 100 links." });
+        }
 
         return res.status(200).json({ success: true, message: "url generated" })
     } catch (error) {
@@ -36,11 +44,25 @@ export async function handleGenerateNewShortURL(req, res) {
 }
 
 export async function getUserUrls(req, res) {
-    const userId = req.params.userId
+    try {
+        const userId = req.params.userId
 
-    const user=await User.find({_id:userId}).populate('createdUrls')
-    
-    return res.status(200).json({urls:user[0]?.createdUrls})
+        const user = await User.find({ _id: userId }).populate('createdUrls')
+
+        return res.status(200).json({ urls: user[0]?.createdUrls })
+    } catch (error) {
+        return res.status(500).json({ message: "server error please try again" })
+    }
+}
+
+export async function deleteUrls(req, res) {
+    try {
+        const urlId = req.params.urlId
+        await URL.findOneAndDelete({ _id: urlId })
+        return res.status(200).json({ message: "url deleted" })
+    } catch (error) {
+        return res.status(500).json({ message: "can not delete url" })
+    }
 }
 
 export async function historyOfShortUrl(req, res) {

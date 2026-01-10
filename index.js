@@ -15,7 +15,10 @@ import URL from './models/Url.js'
 import { dbMiddleware } from './middleware/db.middleware.js'
 
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: [
+        "http://localhost:3000",
+
+        "https://dip00-bb-url-shorter-frontend.vercel.app"],
     credentials: true
 }))
 
@@ -26,23 +29,23 @@ app.use(cookieParser())
 app.use(dbMiddleware)
 
 
-app.get('/', (req,res)=>{
+app.get('/', (req, res) => {
     res.status(200).json("welcome to shorter")
 })
 
 
 
 app.use('/api/url', urlRouter)
-app.use('/api/auth',authRouter)
+app.use('/api/auth', authRouter)
 
 app.get('/:shortId', async (req, res) => {
     const shortId = req.params.shortId
-    const entry=await URL.findOneAndUpdate({
+    const entry = await URL.findOneAndUpdate({
         shortId
     }, {
         $push: {
             visitHistory: {
-                timestamp:Date.now()
+                timestamp: Date.now()
             }
         }
     })

@@ -11,8 +11,8 @@ import urlRouter from './routes/url.router.js'
 import authRouter from './routes/auth.router.js'
 
 
-import { connectToDb } from './config/db.js'
 import URL from './models/Url.js'
+import { dbMiddleware } from './middleware/db.middleware.js'
 
 app.use(cors({
     origin: "http://localhost:3000",
@@ -23,16 +23,17 @@ app.use(cors({
 app.use(express.json())
 app.use(cookieParser())
 
+app.use(dbMiddleware)
 
 
-// welcome route
 app.get('/', (req,res)=>{
     res.status(200).json("welcome to shorter")
 })
 
 
-// url route
+
 app.use('/api/url', urlRouter)
+app.use('/api/auth',authRouter)
 
 app.get('/:shortId', async (req, res) => {
     const shortId = req.params.shortId
@@ -49,11 +50,8 @@ app.get('/:shortId', async (req, res) => {
     res.redirect(entry.redirectURL)
 })
 
-// auth route 
-app.use('/api/auth',authRouter)
 
 
-app.listen(process.env.PORT, () => {
-    connectToDb()
-    console.log("server is running on port", process.env.PORT)
-})
+
+
+export default app;

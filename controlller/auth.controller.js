@@ -34,14 +34,14 @@ export async function handleUserLogin(req, res) {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             maxAge: 15 * 60 * 1000,
-            sameSite: "strict"
+            sameSite: isProduction ? "none" : "lax",
         })
 
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             maxAge: 24 * 60 * 60 * 1000,
-            sameSite: "strict"
+            sameSite: isProduction ? "none" : "lax",
         });
 
         return res.status(200).json({
@@ -131,7 +131,7 @@ export async function handleRefreshToken(req, res) {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             maxAge: 15 * 60 * 1000,  // 15 minutes
-            sameSite: "strict"
+            sameSite: isProduction ? "none" : "lax",
         });
 
         return res.status(200).json({ message: "Access token refreshed successfully",user:{id:user._id,email:user.email,username:user.username} })

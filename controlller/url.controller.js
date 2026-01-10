@@ -5,7 +5,7 @@ import User from "../models/User.js";
 export async function handleGenerateNewShortURL(req, res) {
 
     const body = req.body
-
+    const limit = 100
     if (!body || !body.url) return res.status(400).json({ success: false, error: "Please provide an Url" })
 
     const shortId = nanoid(7)
@@ -17,10 +17,9 @@ export async function handleGenerateNewShortURL(req, res) {
             visitHistory: []
         })
 
-        // console.log(req.userId)
         const result = await User.updateOne({
             _id: req.userId,
-            totalGenLink: { $lt: 100 }
+            totalGenLink: { $lt: limit }
         }, {
             $push: {
                 createdUrls: url._id
@@ -31,7 +30,7 @@ export async function handleGenerateNewShortURL(req, res) {
         })
 
         if (result.modifiedCount === 0) {
-            return res.status(400).json({ message: "You have reached the maximum limit of 100 links." });
+            return res.status(400).json({ message: `You have reached the maximum limit of ${limit} links.` });
         }
 
         return res.status(200).json({ success: true, message: "url generated" })

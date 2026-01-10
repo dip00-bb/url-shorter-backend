@@ -1,4 +1,4 @@
-import { connectToDb } from "../config/db";
+import { connectToDb } from "../config/db.js";
 
 
 export const dbMiddleware = async (req, res, next) => {
